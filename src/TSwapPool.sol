@@ -59,6 +59,7 @@ contract TSwapPool is ERC20 {
         uint256 wethWithdrawn,
         uint256 poolTokensWithdrawn
     );
+    //@audit - Info: Events missing indexed fields if more than 3 params
     event Swap(
         address indexed swapper,
         IERC20 tokenIn,
@@ -87,6 +88,8 @@ contract TSwapPool is ERC20 {
     /*//////////////////////////////////////////////////////////////
                                FUNCTIONS
     //////////////////////////////////////////////////////////////*/
+
+    //@audit - info: add zero address check
     constructor(
         address poolToken,
         address wethToken,
@@ -290,6 +293,7 @@ contract TSwapPool is ERC20 {
         revertIfZero(outputReserves)
         returns (uint256 inputAmount)
     {
+        //@audit -info: Magic numbers
         return
             ((inputReserves * outputAmount) * 10000) /
             ((outputReserves - outputAmount) * 997);
@@ -395,7 +399,7 @@ contract TSwapPool is ERC20 {
         ) {
             revert TSwapPool__InvalidToken();
         }
-        
+
         //@audit: breaks protocol invariant
         swap_count++;
         if (swap_count >= SWAP_COUNT_MAX) {

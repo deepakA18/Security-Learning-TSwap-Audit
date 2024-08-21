@@ -19,7 +19,7 @@ import { IERC20 } from "forge-std/interfaces/IERC20.sol";
 
 contract PoolFactory {
     error PoolFactory__PoolAlreadyExists(address tokenAddress);
-    error PoolFactory__PoolDoesNotExist(address tokenAddress);
+    error PoolFactory__PoolDoesNotExist(address tokenAddress);  //@audit- info:unused custom error!!!
 
     /*//////////////////////////////////////////////////////////////
                             STATE VARIABLES
@@ -37,6 +37,7 @@ contract PoolFactory {
     /*//////////////////////////////////////////////////////////////
                                FUNCTIONS
     //////////////////////////////////////////////////////////////*/
+    //@audit - Info: Lacking zero address check
     constructor(address wethToken) {
         i_wethToken = wethToken;
     }
@@ -49,6 +50,7 @@ contract PoolFactory {
             revert PoolFactory__PoolAlreadyExists(tokenAddress);
         }
         string memory liquidityTokenName = string.concat("T-Swap ", IERC20(tokenAddress).name());
+        //@audit- info: should be .symbol() 
         string memory liquidityTokenSymbol = string.concat("ts", IERC20(tokenAddress).name());
         TSwapPool tPool = new TSwapPool(tokenAddress, i_wethToken, liquidityTokenName, liquidityTokenSymbol);
         s_pools[tokenAddress] = address(tPool);
