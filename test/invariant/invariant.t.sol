@@ -49,14 +49,14 @@ contract Invariant is StdInvariant,Test{
         selectors[1] = handler.swapPoolTokenForWethBasedOonOutputWeth.selector;
 
         targetSelector(
-            FuzzSelector({addr: address(handler), selectors: selectors});l
+            FuzzSelector({addr: address(handler), selectors: selectors})
         );
 
         targetContract(address(handler));
     
     }
 
-    function statefulFuzz_constantProductFormulaStaysTheSame() public {
+    function statefulFuzz_constantProductFormulaStaysTheSame() public view{
         //actual delat x == delta x = (beta/(1-beta)) * x;
         assertEq(handler.actualDeltaX(), handler.expectedDeltaX());
     }
