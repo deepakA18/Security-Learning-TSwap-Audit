@@ -117,7 +117,7 @@ contract TSwapPool is ERC20 {
         uint256 wethToDeposit,
         uint256 minimumLiquidityTokensToMint,
         uint256 maximumPoolTokensToDeposit,
-        uint64 deadline
+        uint64 deadline  //@audit - high: unused deadline var
     )
         external
         revertIfZero(wethToDeposit)
@@ -131,6 +131,7 @@ contract TSwapPool is ERC20 {
         }
         if (totalLiquidityTokenSupply() > 0) {
             uint256 wethReserves = i_wethToken.balanceOf(address(this));
+            //@audit - gas: not very required
             uint256 poolTokenReserves = i_poolToken.balanceOf(address(this));
             // Our invariant says weth, poolTokens, and liquidity tokens must always have the same ratio after the
             // initial deposit
@@ -182,6 +183,9 @@ contract TSwapPool is ERC20 {
                 maximumPoolTokensToDeposit,
                 wethToDeposit
             );
+            //@audit -> info: it would be better if this was before the _addLiquidity() call.
+            //to follow CEI
+            //making external call before updating the state 
             liquidityTokensToMint = wethToDeposit;
         }
     }
@@ -196,6 +200,10 @@ contract TSwapPool is ERC20 {
         uint256 liquidityTokensToMint
     ) private {
         _mint(msg.sender, liquidityTokensToMint);
+        //@audit - Low: This is backwards!
+        // should be -> (msg.sender, wethToDeposit, poolTokensToDeposit)
+        //Impact- low - protocol is giving wrong returns
+        // Likelihood: High
         emit LiquidityAdded(msg.sender, poolTokensToDeposit, wethToDeposit);
 
         // Interactions
@@ -309,6 +317,7 @@ contract TSwapPool is ERC20 {
         public
         revertIfZero(inputAmount)
         revertIfDeadlinePassed(deadline)
+        //@audit - low: protocol is giving wrong written
         returns (uint256 output)
     {
         uint256 inputReserves = inputToken.balanceOf(address(this));
