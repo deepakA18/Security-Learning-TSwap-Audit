@@ -249,6 +249,7 @@ contract TSwapPool is ERC20 {
         }
 
         _burn(msg.sender, liquidityTokensToBurn);
+        //@audit - info: should be placed at last(CEI)
         emit LiquidityRemoved(msg.sender, wethToWithdraw, poolTokensToWithdraw);
 
         i_wethToken.safeTransfer(msg.sender, wethToWithdraw);
@@ -303,6 +304,9 @@ contract TSwapPool is ERC20 {
     {
         //@audit -info: Magic numbers
         return
+        //@audit - high: consuming way too much fees
+        //impact - high
+        //likelihood - one of the main swapping functions!
             ((inputReserves * outputAmount) * 10000) /
             ((outputReserves - outputAmount) * 997);
     }
@@ -367,6 +371,9 @@ contract TSwapPool is ERC20 {
             outputReserves
         );
 
+        //slippage! no check if 
+        //@audit -> high: need a max input amount
+
         _swap(inputToken, inputAmount, outputToken, outputAmount);
     }
 
@@ -379,6 +386,7 @@ contract TSwapPool is ERC20 {
         uint256 poolTokenAmount
     ) external returns (uint256 wethAmount) {
         return
+        //@audit -> the params are backwards
             swapExactOutput(
                 i_poolToken,
                 i_wethToken,
@@ -446,6 +454,7 @@ contract TSwapPool is ERC20 {
     }
 
     /// @notice a more verbose way of getting the total supply of liquidity tokens
+    //@audit -> info: function should be external
     function totalLiquidityTokenSupply() public view returns (uint256) {
         return totalSupply();
     }
