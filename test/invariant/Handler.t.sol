@@ -91,7 +91,5 @@ contract Handler is Test{
         actualDeltaY = int256(endingY) -int256(startingY);
         actualDeltaX = int256(endingX) - int256(startingX);
 
-
-
     }
 }
